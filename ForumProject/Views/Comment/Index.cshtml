@@ -1,0 +1,31 @@
+﻿@model ForumProject.Models.ViewModel.Comment.CommentViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>@Model.Post.Title</h1>
+<hr />
+<a href="#">@Model.Post.User.UserName</a> - <text>@Model.Post.PostDate.LocalDateTime</text>
+@Model.Post.Content
+<hr />
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model=>model.Comment.User.UserName)</th>
+            <th>@Html.DisplayNameFor(model=>model.Comment.Content)</th>
+            <th>@Html.DisplayNameFor(model=>model.Comment.CommentDate.LocalDateTime)</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.comments) {
+        <tr>
+            <td>@item.User.UserName</td>
+            <td>@item.Content</td>
+            <td>
+                @item.CommentDate.LocalDateTime
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

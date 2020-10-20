@@ -1,0 +1,33 @@
+﻿@model IEnumerable<DomainModel.Entity.Section>
+
+@{
+    ViewData["Title"] = "Forum";
+}
+<h1>Forum</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SectionName)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                <a asp-action="Index" asp-controller="Thread" asp-route-id="@item.Id">@item.SectionName</a>
+
+            </td>
+            @if (User.IsInRole("Admin"))
+            {
+                <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+            }
+        </tr>
+}
+    </tbody>
+</table>
