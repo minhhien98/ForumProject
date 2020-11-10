@@ -1,5 +1,4 @@
 ﻿using DomainModel.Entity;
-using System;
 using System.Collections.Generic;
 
 namespace Service.Interface

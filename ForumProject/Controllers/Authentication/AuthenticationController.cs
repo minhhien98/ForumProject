@@ -18,6 +18,14 @@ namespace ForumProject.Controllers.Authentication
         }
         public IActionResult Login()
         {
+            if (TempData["StatusMessage"] != null)
+            {
+                ModelState.AddModelError("", TempData["StatusMessage"].ToString());
+            }
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home");
+            }
             return View();
         }
         [HttpPost]
@@ -28,7 +36,7 @@ namespace ForumProject.Controllers.Authentication
             {
                 return RedirectToAction("Index", "Home");
             }
-            ModelState.AddModelError(vm.Password, "Invalid Username/Password");
+            ModelState.AddModelError("Password", "Invalid Username/Password");
             return View(vm);
         }
         public IActionResult UserProfile()

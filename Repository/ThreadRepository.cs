@@ -23,7 +23,8 @@ namespace Repository
 
         public void DeleteThread(Thread thread)
         {
-            _dbContext.Threads.Remove(thread);
+            var item = _dbContext.Threads.Include(t => t.Posts).First(t => t.Id == thread.Id);
+            _dbContext.Threads.Remove(item);
             _dbContext.SaveChanges();
         }
 

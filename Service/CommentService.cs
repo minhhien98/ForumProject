@@ -26,17 +26,17 @@ namespace Service
 
         public void DeleteComment(Comment comment)
         {
-            throw new NotImplementedException();
+            _commentRepository.DeleteComment(comment);
         }
 
         public void EditComment(Comment comment)
         {
-            throw new NotImplementedException();
+            _commentRepository.EditComment(comment);
         }
 
         public Comment GetCommentById(int id)
         {
-            throw new NotImplementedException();
+            return _commentRepository.GetCommentById(id);
         }
     }
 }

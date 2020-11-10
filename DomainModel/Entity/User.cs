@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace DomainModel.Entity
@@ -14,7 +15,10 @@ namespace DomainModel.Entity
         public string LastName { get; set; }
         public int UserRoleId { get; set; }
         public UserRole UserRole { get; set; }
+        
+        public byte[] AvatarImage { get; set; }
 
         public ICollection<Comment> Comments { get; set; }
+        public ICollection<Post> Posts { get; set; }
     }
 }

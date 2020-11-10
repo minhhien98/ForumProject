@@ -15,7 +15,7 @@ namespace DomainModel.Entity
         public DateTimeOffset PostDate { get; set; }
         public int ThreadId { get; set; }
         public Thread Thread { get; set; }
-
+        public bool IsClosed { get; set; }
         public ICollection<Comment> Comments { get; set; }
     }
 }

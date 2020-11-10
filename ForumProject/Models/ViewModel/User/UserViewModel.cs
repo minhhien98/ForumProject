@@ -12,6 +12,7 @@ namespace ForumProject.Models.ViewModel.User
         public int Id { get; set; }
         [Required]
         [MinLength(6, ErrorMessage = "User name must have 6 characters or above!!!")]
+        [Display(Name ="Username:")]
         public string UserName { get; set; }
         [Required]
         [MinLength(6, ErrorMessage = "Password must have 6 characters or above!!!")]
@@ -19,11 +20,15 @@ namespace ForumProject.Models.ViewModel.User
         [Required]
         public string Email { get; set; }
         [Required]
+        [Display(Name = "First name:")]
         public string FirstName { get; set; }
         [Required]
+        [Display(Name = "Last name:")]
         public string LastName { get; set; }
         [Required]
-        public int UserRoleId { get; set; }
+        [Display(Name = "Role:")]
+        public int UserRoleId { get; set; }       
         public List<SelectListItem> UserRole { get; set; }
+        public byte[] AvatarImage { get; set; }
     }
 }

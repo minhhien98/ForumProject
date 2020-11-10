@@ -61,9 +61,15 @@ namespace ForumProject.Controllers
         public IActionResult Edit(int id)
         {
             var thread = _threadService.GetThreadById(id);
-            var vm = _mapper.Map<ThreadViewModel>(thread);
-            //vm.SectionId = thread.SectionId;
-            vm.Section = _sectionService.SectionList().Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.SectionName }).ToList();
+            //var vm = _mapper.Map<ThreadViewModel>(thread);
+            var vm = new ThreadViewModel()
+            {
+                Id = thread.Id,
+                ThreadName = thread.ThreadName,
+                SectionId = thread.SectionId,
+                Section = _sectionService.SectionList().Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.SectionName }).ToList()
+            };
+            
             return View(vm);
         }
         [Authorize(Roles ="Admin")]
@@ -83,7 +89,12 @@ namespace ForumProject.Controllers
         public IActionResult Delete(int id)
         {
             var thread = _threadService.GetThreadById(id);
-            var vm = _mapper.Map<ThreadViewModel>(thread);
+            var vm = new ThreadViewModel()
+            {
+                Id = thread.Id,
+                ThreadName = thread.ThreadName,
+                SectionId=thread.SectionId,
+            };
             return View(vm);
         }
         [Authorize(Roles ="Admin")]

@@ -1,8 +1,10 @@
-﻿using System;
+﻿using DomainModel.Entity;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Utility;
 
 namespace ForumProject.Models.ViewModel.User
 {
@@ -23,5 +25,6 @@ namespace ForumProject.Models.ViewModel.User
         public string LastName { get; set; }
         [Required]
         public int UserRoleId = 2;
+        public byte[] AvatarImage = ImageConverter.ImageToByteArray("wwwroot/Images/Avatar/default.png");
     }
 }

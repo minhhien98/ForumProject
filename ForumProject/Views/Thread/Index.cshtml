@@ -2,32 +2,50 @@
 
 @{
     ViewBag.Title = ViewBag.Section;
+    @*<link href="~/css/ForumList.css" rel="stylesheet" />*@
 }
 
-<h1>@ViewBag.Section</h1>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ThreadName)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                <a asp-controller="Post" asp-action="Index" asp-route-id="@item.Id">@item.ThreadName</a>
-            </td>
-            @if (User.IsInRole("Admin"))
-            {
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            }
-        </tr>
-}
-    </tbody>
-</table>
+
+<div class="container-fluid mt-100">
+    <h1>@ViewBag.Section</h1>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-3">
+                <div class="card-header pr-0 pl-0">
+                    <div class="row no-gutters align-items-center w-100">
+                        <div class="col font-weight-bold pl-3">@Html.DisplayNameFor(model => model.ThreadName)</div>
+                        <div class="d-none d-md-block col-6 text-muted">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col-3"></div>
+                                @*<div class="col-3">Replies</div>
+                                    <div class="col-6">Last update</div>*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @foreach (var item in Model)
+                {
+                    <div class="card-body py-3">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col"><a asp-action="Index" asp-controller="Post" asp-route-id="@item.Id" class="text-big font-weight-semibold" data-abc="true">@item.ThreadName</a></div>
+                            <div class="d-none d-md-block col-6">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col-3">
+                                        @if (User.IsInRole("Admin"))
+                                        {
+
+                                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="m-0">
+                }
+            </div>
+        </div>
+    </div>
+</div>

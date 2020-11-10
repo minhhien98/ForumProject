@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal;
 using Service.Interface;
+using X.PagedList;
 
 namespace ForumProject.Controllers
 {
@@ -27,9 +28,10 @@ namespace ForumProject.Controllers
             _userService = userService;
             _threadService = threadService;
         }
-        public IActionResult Index(int id)
+        public IActionResult Index(int id,int? page)
         {
-            var list = _postService.PostList().Where(p => p.ThreadId == id);
+            var pageNumber = page ?? 1;
+            var list = _postService.PostList().Where(p => p.ThreadId == id).ToPagedList(pageNumber, 10);
             ViewBag.ThreadId = id;
             ViewBag.Thread = _threadService.GetThreadById(id).ThreadName;
             return View(list);
@@ -53,6 +55,7 @@ namespace ForumProject.Controllers
                 var post = _mapper.Map<Post>(vm);
                 post.PostDate = DateTimeOffset.UtcNow;
                 post.Id = 0;
+                post.IsClosed = false;
                 _postService.CreatePost(post);
                 return RedirectToAction("UserPostList", "Post");
                 //return RedirectToAction("Index", new { id = vm.ThreadId });
@@ -114,6 +117,16 @@ namespace ForumProject.Controllers
                 return RedirectToAction("UserPostList","Post");
             }
             return NotFound();
+        }
+
+        [Authorize]
+        [HttpPost]
+        public IActionResult CloseTopic(int PostId)
+        {
+            var post = _postService.GetPostById(PostId);
+            post.IsClosed = true;
+            _postService.EditPost(post);
+            return RedirectToAction("Index", "Comment", new { id = post.Id });
         }
     }
 }

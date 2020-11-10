@@ -1,31 +1,273 @@
 ﻿@model ForumProject.Models.ViewModel.Comment.CommentViewModel
-
+@using X.PagedList.Mvc.Core
+@using Humanizer
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = Model.Post.Title;
+    @*<link href="~/css/PostDetail.css" rel="stylesheet" />*@
+}
+<body>
+    <div class="container-fluid mt-100">
+        
+        @if (ViewBag.PageNumber == 1)
+        {
+            @if (User.Identity.Name == Model.Post.User.UserName && Model.Post.IsClosed == false || User.IsInRole("Admin") && Model.Post.IsClosed == false)
+            {
+                <div class="d-flex flex-wrap justify-content-between">
+                    <button class="btn btn-danger ml-auto" data-toggle="modal" data-target="#CloseTopicForm">Close Topic</button>
+                </div>
+            }
+            @if (Model.Post.IsClosed)
+            {
+                <div class="d-flex flex-wrap justify-content-between">
+                    <button class="btn btn-danger ml-auto" disabled>Closed</button>
+                </div>
+            }
+            <div class="row">
+                <div class="col-md-12">                 
+                    <div class="card mb-4">
+                        <h1>@Model.Post.Title</h1>
+                        <div class="card-header">
+                            <div class="media flex-wrap w-100 align-items-center">
+                                <img src="data:image;base64,@System.Convert.ToBase64String(Model.Post.User.AvatarImage)" class="d-block ui-w-40 rounded-circle" alt="">
+                                <div class="media-body ml-3">
+                                    <a href="javascript:void(0)" data-abc="true">@Model.Post.User.UserName</a>
+                                    <div class="text-muted small">@Model.Post.PostDate.Humanize()</div>
+                                </div>
+                                <div class="text-muted small ml-3">
+                                    @*<div>Member since <strong>01/1/2019</strong></div>*@
+                                    @if (@Model.Post.User.Posts.Count > 1)
+                                    {
+                                        <div><strong>@Model.Post.User.Posts.Count</strong> posts</div>
+                                    }
+                                    else
+                                    {
+                                        <div><strong>@Model.Post.User.Posts.Count</strong> post</div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p>
+                                @Model.Post.Content
+                            </p>
+                        </div>
+                        <div class="card-footer d-flex flex-wrap justify-content-between align-items-center px-0 pt-0 pb-3">
+                            @*<div class="px-4 pt-3"> <a href="javascript:void(0)" class="text-muted d-inline-flex align-items-center align-middle" data-abc="true"> <i class="fa fa-heart text-danger"></i>&nbsp; <span class="align-middle">445</span> </a> <span class="text-muted d-inline-flex align-items-center align-middle ml-4"> <i class="fa fa-eye text-muted fsize-3"></i>&nbsp; <span class="align-middle">14532</span> </span> </div>*@
+                            @*<div class="px-4 pt-3"> <button type="button" class="btn btn-primary"><i class="ion ion-md-create"></i>&nbsp; Reply</button> </div>*@
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    @foreach (var item in Model.comments)
+                    {
+                        <div class="card-header">
+                            <div class="media flex-wrap w-100 align-items-center">
+                                <img src="data:image;base64,@System.Convert.ToBase64String(item.User.AvatarImage)" class="d-block ui-w-40 rounded-circle" alt="">
+                                <div class="media-body ml-3">
+                                    <a href="javascript:void(0)" data-abc="true">@item.User.UserName</a>
+                                    <div class="text-muted small">@item.CommentDate.Humanize()</div>
+                                </div>
+                                <div class="text-muted small ml-3">
+                                    @*<div>Member since <strong>01/1/2019</strong></div>*@
+                                    @if (@item.User.Posts.Count > 1)
+                                    {
+                                        <div><strong>@item.User.Posts.Count</strong> posts</div>
+                                    }
+                                    else
+                                    {
+                                        <div><strong>@item.User.Posts.Count</strong> post</div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p>
+                                @item.Content
+                            </p>
+                        </div>
+                        <div class="card-footer d-flex flex-wrap justify-content-between align-items-center px-0 pt-0 pb-3">
+                            @*<div class="px-4 pt-3"> <a href="javascript:void(0)" class="text-muted d-inline-flex align-items-center align-middle" data-abc="true"> <i class="fa fa-heart text-danger"></i>&nbsp; <span class="align-middle">445</span> </a> <span class="text-muted d-inline-flex align-items-center align-middle ml-4"> <i class="fa fa-eye text-muted fsize-3"></i>&nbsp; <span class="align-middle">14532</span> </span> </div>*@
+                            <div class="px-4 pt-3 ml-auto">
+                                @if (User.Identity.Name == item.User.UserName || User.IsInRole("Admin"))
+                                {
+                                    <button type="button" class="btn btn-primary Edit" id="OpenEditCommentForm" data-id="@item.Id" data-content="@item.Content" data-toggle="modal" data-target="#EditCommentForm">
+                                        <i class="ion ion-md-create"></i>&nbsp; Edit
+                                    </button>
+                                    <button class="btn btn-danger ml-auto Delete" data-id="@item.Id" data-toggle="modal" data-target="#DeleteCommentForm">Delete</button>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <nav>
+            <ul class="pagination mb-5">
+                @Html.PagedListPager((X.PagedList.IPagedList)Model.comments, page => Url.Action("Index", new { page }),
+               new X.PagedList.Mvc.Core.Common.PagedListRenderOptions
+               {
+                   LiElementClasses = new string[] { "page-item" },
+                   PageClasses = new string[] { "page-link" }
+               })
+            </ul>
+        </nav>
+        @if (User.Identity.IsAuthenticated && Model.Post.IsClosed == false)
+        {
+            <form asp-controller="Comment" asp-action="Create" method="post">
+                <input type="hidden" name="PostId" value="@ViewBag.PostId" />
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <div class="media flex-wrap w-100 align-items-center">
+                                    <img src="data:image;base64,@System.Convert.ToBase64String(Model.CurrentUser.AvatarImage)" class="d-block ui-w-40 rounded-circle" alt="">
+                                    <div class="media-body ml-3">
+                                        <a href="javascript:void(0)" data-abc="true">@User.Identity.Name</a>
+                                        @*<div class="text-muted small">@Model.Post.PostDate.Humanize()</div>*@
+                                    </div>
+                                    <div class="text-muted small ml-3">
+                                        @*<div>Member since <strong>01/1/2019</strong></div>
+                                            @if (@Model.Post.User.Posts.Count > 1)
+                                            {
+                                                <div><strong>@Model.Post.User.Posts.Count</strong> posts</div>
+                                            }
+                                            else
+                                            {
+                                                <div><strong>@Model.Post.User.Posts.Count</strong> post</div>
+                                            }*@
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <textarea class="form-control" name="StrComment"></textarea>
+                            </div>
+                            <div class="card-footer d-flex flex-wrap justify-content-between align-items-center px-0 pt-0 pb-3">
+                                @*<div class="px-4 pt-3"> <a href="javascript:void(0)" class="text-muted d-inline-flex align-items-center align-middle" data-abc="true"> <i class="fa fa-heart text-danger"></i>&nbsp; <span class="align-middle">445</span> </a> <span class="text-muted d-inline-flex align-items-center align-middle ml-4"> <i class="fa fa-eye text-muted fsize-3"></i>&nbsp; <span class="align-middle">14532</span> </span> </div>*@
+                                <div class="px-4 pt-3"> <button type="submit" class="btn btn-primary"><i class="ion ion-md-create"></i>&nbsp; Post Comment</button> </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        }
+    </div>
+</body>
+@if (User.Identity.Name == Model.Post.User.UserName && Model.Post.IsClosed == false || User.IsInRole("Admin") && Model.Post.IsClosed == false)
+{
+    <form asp-controller="Post" asp-action="CloseTopic" method="post">
+        <input type="hidden" name="PostId" value="@Model.Post.Id" />
+        <!-- Modal Form -->
+        <div class="modal" id="CloseTopicForm">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Close Topic</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        Do you want to close topic?
+                    </div>
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger">Yes</button>
+                        <button type="button" class="btn btn-light" data-dismiss="modal">No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+}
+@*Edit Comment Modal*@
+@if (User.Identity.IsAuthenticated || User.IsInRole("Admin"))
+{
+    <form asp-controller="Comment" asp-action="Edit" method="post">
+        <input type="hidden" id="EditCommentId" name="CommentId" />
+        <!-- Modal Form -->
+        <div class="modal" id="EditCommentForm">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Edit Comment</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <textarea class="form-control Edit" id="EditCommentContent" name="CommentContent"></textarea>
+                    </div>
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger" id="EditCommentButton">Edit Comment</button>
+                        <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+}
+@*Delete Comment Modal*@
+@if (User.Identity.IsAuthenticated || User.IsInRole("Admin"))
+{
+    <form asp-controller="Comment" asp-action="Delete" method="post">
+        <input type="hidden" id="DeleteCommentId" name="CommentId" />
+        <!-- Modal Form -->
+        <div class="modal" id="DeleteCommentForm">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Delete Comment</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        Do you want to delete this comment?
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger">Yes</button>
+                        <button type="button" class="btn btn-light" data-dismiss="modal">No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 }
 
-<h1>@Model.Post.Title</h1>
-<hr />
-<a href="#">@Model.Post.User.UserName</a> - <text>@Model.Post.PostDate.LocalDateTime</text>
-@Model.Post.Content
-<hr />
-<table class="table">
-    <thead>
-        <tr>
-            <th>@Html.DisplayNameFor(model=>model.Comment.User.UserName)</th>
-            <th>@Html.DisplayNameFor(model=>model.Comment.Content)</th>
-            <th>@Html.DisplayNameFor(model=>model.Comment.CommentDate.LocalDateTime)</th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.comments) {
-        <tr>
-            <td>@item.User.UserName</td>
-            <td>@item.Content</td>
-            <td>
-                @item.CommentDate.LocalDateTime
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Edit Comment
+        $('button.Edit').click(function () {
+            $('#EditCommentId').val($(this).data('id'));
+            $('#EditCommentContent').val($(this).data('content'));
+        });
+        //Text area on keyup
+        $('#EditCommentContent').keyup(function () {
+            if ($('#EditCommentContent').val() != '') {
+                $('#EditCommentButton').prop('disabled', false);
+            }
+            else {
+                $('#EditCommentButton').prop('disabled', true);
+            }
+        });
+        //Delete Comment
+        $('button.Delete').click(function () {
+            $('#DeleteCommentId').val($(this).data('id'));
+        });
+    });
+    /*function EditComment(id) {
+        var button = document.querySelector("button#id");
+        button.innerHTML = "OK";
+        var content = document.querySelector("p#id");
+        content.outerHTML = "<textarea class='form-control'>"+content.innerHTML+"</textarea>";
+    }*/
+</script>

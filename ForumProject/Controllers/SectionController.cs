@@ -72,7 +72,12 @@ namespace ForumProject.Controllers
         public IActionResult Delete(int id)
         {
             var section = _sectionService.GetSectionById(id);
-            return View(section);
+            var vm = new SectionViewModel()
+            {
+                Id = section.Id,
+                SectionName = section.SectionName,
+            };
+            return View(vm);
         }
         [Authorize(Roles ="Admin")]
         [HttpPost]

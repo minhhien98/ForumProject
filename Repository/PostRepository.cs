@@ -23,7 +23,8 @@ namespace Repository
 
         public void DeletePost(Post post)
         {
-            _dbContext.Posts.Remove(post);
+            var item = _dbContext.Posts.Include(p => p.Comments).First(p => p.Id == post.Id);
+            _dbContext.Posts.Remove(item);
             _dbContext.SaveChanges();
         }
 
@@ -40,7 +41,7 @@ namespace Repository
 
         public IEnumerable<Post> PostList()
         {
-            return _dbContext.Posts.Include(p => p.Thread).ToList();
+            return _dbContext.Posts.Include(p => p.Thread).Include(p=>p.User).Include(p=>p.Comments).ToList();
         }
     }
 }

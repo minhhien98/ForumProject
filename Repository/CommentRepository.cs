@@ -23,7 +23,7 @@ namespace Repository
 
         public IEnumerable<Comment> CommentList()
         {
-            return _dbContext.Comments.Include(c => c.User).Include(c => c.Post).ToList();
+            return _dbContext.Comments.Include(c => c.User.Posts).Include(c => c.Post).ToList();
         }
 
         public void DeleteComment(Comment comment)

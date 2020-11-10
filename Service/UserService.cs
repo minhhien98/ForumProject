@@ -2,7 +2,11 @@
 using Repository.Interface;
 using Service.Interface;
 using System;
+using System.Drawing.Printing;
 using System.Collections.Generic;
+using System.IO;
+using System.Drawing;
+using Microsoft.AspNetCore.Http;
 
 namespace Service
 {
