@@ -6,6 +6,7 @@ using ForumProject.Models.ViewModel;
 using ForumProject.Models.ViewModel.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Service.Interface;
+using Utility;
 
 namespace ForumProject.Controllers.Authentication
 {
@@ -31,6 +32,7 @@ namespace ForumProject.Controllers.Authentication
         [HttpPost]
         public IActionResult Login(LoginViewModel vm)
         {
+            vm.Password = PasswordHelper.Sha256(vm.Password, vm.Username);
             var result = _authenticationService.Login(vm.Username, vm.Password, vm.RememberMe);
             if (result)
             {

@@ -5,7 +5,14 @@
     @*<link href="~/css/ForumList.css" rel="stylesheet" />*@
 }
 <div class="container-fluid mt-100">
-    <h1>Forum</h1>
+    <h1>Section</h1>
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="d-flex flex-wrap justify-content-between">
+            <div> <a asp-controller="Section" asp-action="Create" class="btn btn-shadow btn-wide btn-primary"><span class="btn-icon-wrapper pr-2 opacity-7"> <i class="fa fa-plus fa-w-20"></i> </span> New Section</a> </div>
+            @*<div class="col-12 col-md-3 p-0 mb-3"> <input type="text" class="form-control" placeholder="Search..."> </div>*@
+        </div>
+    }
     <div class="row">
         <div class="col-md-12">
             <div class="card mb-3">

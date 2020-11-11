@@ -44,6 +44,7 @@ namespace ForumProject.Controllers
             if (ModelState.IsValid)
             {               
                 var user = _mapper.Map<User>(vm);
+                user.Password = PasswordHelper.Sha256(user.Password, user.UserName);
                 _userService.CreateUser(user);
                 //_authenticationService.Login(user.UserName, user.Password, false);
                 TempData["StatusMessage"] = "Register successfully, Please Login!";
@@ -70,6 +71,34 @@ namespace ForumProject.Controllers
             }
             ModelState.AddModelError("AvatarImage", "Please Insert Image!");
             return View();
+        }
+        [Authorize]
+        public IActionResult ChangePassword()
+        {
+            var vm = new ChangePasswordViewModel();
+            return View(vm);
+        }
+        [Authorize]
+        [HttpPost]
+        public IActionResult ChangePassword(ChangePasswordViewModel vm)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = _userService.GetUserByUserName(User.Identity.Name);
+                vm.OldPassword = PasswordHelper.Sha256(vm.OldPassword, user.UserName);
+                if (user.Password == vm.OldPassword)
+                {
+                    user.Password = PasswordHelper.Sha256(vm.NewPassword, user.UserName);
+                    _userService.EditUser(user);
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    ModelState.AddModelError("OldPassword", "Invalid Password.");
+                    return View(vm);
+                }
+            }
+            return View(vm);
         }
         
         //Admin Only
@@ -103,9 +132,9 @@ namespace ForumProject.Controllers
             {
                 vm.AvatarImage = Utility.ImageConverter.ImageToByteArray("wwwroot/Images/Avatar/default.png");
                 var user = _mapper.Map<User>(vm);
-                //user.Password = PasswordHelper.Sha256(user.Password, user.UserName);
+                user.Password = PasswordHelper.Sha256(user.Password, user.UserName);
                 _userService.CreateUser(user);
-                return RedirectToAction("UserList", "User");
+                return RedirectToAction("List", "User");
             }
             vm.UserRole = _userRoleService.RoleList().Select(r => new SelectListItem() { Value = r.Id.ToString(), Text = r.RoleName }).ToList();
             return View(vm);

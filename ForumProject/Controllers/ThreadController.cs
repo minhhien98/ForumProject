@@ -26,16 +26,18 @@ namespace ForumProject.Controllers
         }
         public IActionResult Index(int id)
         {
+            ViewBag.SectionId = id;
             ViewBag.Section = _sectionService.GetSectionById(id).SectionName;
             var list = _threadService.ThreadList().Where(t => t.SectionId == id);
             return View(list);
         }
         [Authorize(Roles ="Admin")]
-        public IActionResult Create()
+        public IActionResult Create(int id)
         {
             ThreadViewModel vm = new ThreadViewModel()
             {
-                Section = _sectionService.SectionList().Select(t=> new SelectListItem() { Value = t.Id.ToString(),Text = t.SectionName}).ToList(),
+                Section = _sectionService.SectionList().Select(t => new SelectListItem() { Value = t.Id.ToString(), Text = t.SectionName }).ToList(),
+                SectionId = id
             };
             return View(vm);
         }
@@ -52,6 +54,7 @@ namespace ForumProject.Controllers
             vm.Section = _sectionService.SectionList().Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.SectionName }).ToList();
             return View(vm);
         }
+        [Authorize(Roles = "Admin")]
         public IActionResult List()
         {
             var list = _threadService.ThreadList();
